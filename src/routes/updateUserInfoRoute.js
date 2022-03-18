@@ -30,8 +30,11 @@ const updateUserInfoRoute = {
         jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
             if(err) return res.status(401).json({ message: 'Unable to verify token!' });
 
-            const { id } = decoded;
+            //const { id, isVerified } 
+            const { id, isVerified } = decoded;
+            
             if (id !== userId) return res.status(403).json({ message: 'Not allowed to update that user\'s data!' });
+            if( !isVerified ) return res.status(403).json({ message: 'You need to verify your email before you can update your data!'});
 
             const db = getDbConnection('react-auth-db');
             const result = await db.collection('users').findOneAndUpdate(
@@ -39,16 +42,16 @@ const updateUserInfoRoute = {
                 { $set: { info: updates }},
                 { returnOriginal: false });
 
-                const { email, isVerified, info } = result.value;
+            const { email, info } = result.value;
 
-                jwt.sign(
-                    { id, email, info, isVerified }, process.env.JWT_SECRET, { expiresIn: '2d' }, 
-                    (err, token) => {
-                        if(err) return res.status(200).json(err);
+            jwt.sign(
+                { id, email, info, isVerified }, process.env.JWT_SECRET, { expiresIn: '2d' }, 
+                (err, token) => {
+                    if(err) return res.status(200).json(err);
 
-                        res.status(200).json({ token });
-                    }
-                );
+                    res.status(200).json({ token });
+                }
+            );
         });
 
     }
