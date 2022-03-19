@@ -10,7 +10,7 @@ export const testEmailRoute = {
                 from: 'ptrckbyamasu@gmail.com',
                 subject: 'Does this works?',
                 text: 'If you are seeing this, then yes it works. This is a test email from the application that I am developing.',               
-
+                html: '<strong>If you are seeing this, then yes it works. This is a test email from the application that I am developing.</strong>',
             });
             res.sendStatus(200);
         } catch (error) {
